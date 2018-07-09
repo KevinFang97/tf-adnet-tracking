@@ -306,8 +306,9 @@ class BoundingBox:
             whole_samples = []
 
         pos_samples = []
-        for _ in range(pos_size):
-            pos_samples.append(random.choice(gaussian_samples))
+        if len(gaussian_samples) > 0:
+            for _ in range(pos_size):
+                pos_samples.append(random.choice(gaussian_samples))
 
         neg_candidates = uniform_samples + whole_samples
         neg_samples = []

@@ -149,11 +149,13 @@ class ADNetRunner:
         neg_samples = [commons.extract_region(get_img(i, 1), box) for i, box in enumerate(neg_boxes)]
         # pos_feats, neg_feats = self._get_features(pos_samples), self._get_features(neg_samples)
 
-        commons.imshow_grid('pos', pos_samples[-50:], 10, 5)
-        commons.imshow_grid('neg', neg_samples[-50:], 10, 5)
-        cv2.waitKey(1)
+        #commons.imshow_grid('pos', pos_samples[-50:], 10, 5)
+        #commons.imshow_grid('neg', neg_samples[-50:], 10, 5)
+        #cv2.waitKey(1)
 
         for i in range(iter):
+            if len(pos_boxes) < 1:
+                continue
             batch_idxs = commons.random_idxs(len(pos_boxes), BATCHSIZE)
             batch_feats = [x.feat for x in commons.choices_by_idx(pos_boxes, batch_idxs)]
             batch_lb_action = commons.choices_by_idx(pos_lb_action, batch_idxs)
@@ -237,7 +239,7 @@ class ADNetRunner:
                     print('action idx', action_idx)
                     print(prev_bbox)
                     print(curr_bbox)
-                    raise Exception('box not moved.')
+                    # raise Exception('box not moved.')
 
             # oscillation check
             if action_idx != ADNetwork.ACTION_IDX_STOP and curr_bbox in boxes:
@@ -312,7 +314,7 @@ class ADNetRunner:
             _logger.debug('finetuned')
             self.stopwatch.stop('tracking.online_finetune')
 
-        cv2.imshow('patch', patch)
+        #cv2.imshow('patch', patch)
 
         confidence = self.latest_score if is_tracked else new_score
         return curr_bbox, confidence

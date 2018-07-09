@@ -1,8 +1,18 @@
-import runner
+#!/usr/bin/python
 
+import runner
+import sys
+import os
+import commons
+import boundingbox
+from configs import ADNetConf
+import random
+import numpy as np
+import tensorflow as tf
 #path init
 ADNET_MODEL_PATH = "/home/yuwing/2018CK2/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
-VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
+VOT_PATH = "/home/yuwing/2018CK2/vot/vot-toolkit"
+#VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
 
 #import toolkit
 sys.path.insert(0,VOT_PATH)
@@ -11,6 +21,11 @@ from tracker.examples.python import vot
 #init runner
 init_err = False
 _environ = dict(os.environ)  # or os.environ.copy()
+ADNetConf.get('/home/yuwing/2018CK2/adnet/tf-adnet-tracking/conf/repo.yaml')
+random.seed(1258)
+np.random.seed(1258)
+tf.set_random_seed(1258)
+
 try:
     os.environ['ADNET_MODEL_PATH'] = ADNET_MODEL_PATH
     adnet = runner.ADNetRunner()
@@ -40,6 +55,6 @@ while(True):
     bbox, confidence = adnet.tracking(img,bbox)
     selection = vot.Rectangle(bbox.xy.x, bbox.xy.y, bbox.wh.x, bbox.wh.y)
     #TODO: mapping confidence to 0~1 (if not in 0~1 range)
-    confidence = 1
+    #confidence = 1
 
     handle.report(selection, confidence)

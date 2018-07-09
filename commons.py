@@ -27,8 +27,15 @@ def extract_region(img, bbox):
 
     # crop and resize
     crop = img[xy.y:xy.y+wh.y, xy.x:xy.x+wh.x, :]
-    resize = cv2.resize(crop, (112, 112))
-    return resize
+    if  wh.y > 1 and wh.x > 1:
+        resize = cv2.resize(crop, (112, 112))
+        return resize
+    else:
+        shape = list(np.shape(img))
+        x = int(shape[0]/2)
+        y = int(shape[1]/2)
+        resize = img[x-56:x+56,y-56:y+56]
+        return resize
 
 
 def minmax(num, min_num, max_num):
