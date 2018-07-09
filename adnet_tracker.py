@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/python
 
 import runner
@@ -13,10 +14,20 @@ import tensorflow as tf
 ADNET_MODEL_PATH = "/home/yuwing/2018CK2/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
 VOT_PATH = "/home/yuwing/2018CK2/vot/vot-toolkit"
 #VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
+=======
+import os
+import random
+import commons
+import numpy as np
+import tensorflow as tf
+import sys
+sys.path.insert(0,"/home/fang/vot/vot-toolkit")
+>>>>>>> 39406672bdc541261d0623b666b4a2a0eac57cb4
 
-#import toolkit
-sys.path.insert(0,VOT_PATH)
-from tracker.examples.python import vot
+from boundingbox import BoundingBox, Coordinate
+from tracker.example.python import vot
+import runner
+from configs import ADNetConf
 
 #init runner
 init_err = False
@@ -44,7 +55,7 @@ imagefile = handle.frame()
 if not imagefile:
     sys.exit(0)
 selection = handle.region()
-bbox = boundingbox.BoundingBox(selection.x,selection.y,selection.width,selection.height)
+bbox = BoundingBox(selection.x,selection.y,selection.width,selection.height)
 
 while(True):
     imagefile = handle.frame()
