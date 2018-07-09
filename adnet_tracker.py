@@ -1,8 +1,8 @@
 import runner
 
 #path init
-ADNET_MODEL_PATH = ""
-VOT_PATH = "/home/yuwing/2018CK2/vot/vot-toolkit"
+ADNET_MODEL_PATH = "/home/yuwing/2018CK2/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
+VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
 
 #import toolkit
 sys.path.insert(0,VOT_PATH)
