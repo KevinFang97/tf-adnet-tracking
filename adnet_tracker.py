@@ -4,7 +4,7 @@ import commons
 import numpy as np
 import tensorflow as tf
 import sys
-sys.path.insert(0,"/home/fang/vot/mavot/tracking/source/fakekit")
+sys.path.insert(0,"/home/fang/vot/vot-toolkit")
 
 from boundingbox import BoundingBox, Coordinate
 from tracker.example.python import vot
