@@ -79,7 +79,7 @@ class ADNetRunner:
                 curr_bbox = gt_box
 
             # tracking
-            predicted_box = self.tracking(img, curr_bbox)
+            predicted_box, _ = self.tracking(img, curr_bbox)
             self.show(img, gt_box=gt_box, predicted_box=predicted_box)
             # cv2.imwrite('/Users/ildoonet/Downloads/aaa/%d.jpg' % self.iteration, img)
             curr_bbox = predicted_box
@@ -313,7 +313,9 @@ class ADNetRunner:
             self.stopwatch.stop('tracking.online_finetune')
 
         cv2.imshow('patch', patch)
-        return curr_bbox
+
+        confidence = self.latest_score if is_tracked else new_score
+        return curr_bbox, confidence
 
     def redetection_by_sampling(self, prev_box, img):
         """

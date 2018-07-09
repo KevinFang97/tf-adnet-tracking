@@ -31,16 +31,15 @@ if not imagefile:
 selection = handle.region()
 bbox = boundingbox.BoundingBox(selection.x,selection.y,selection.width,selection.height)
 
-#TODO: Redetection
 while(True):
     imagefile = handle.frame()
     if not imagefile:
         sys.exit(0)
     img = commons.imread(imagefile)
 
-    bbox = adnet.tracking(img,bbox)
+    bbox, confidence = adnet.tracking(img,bbox)
     selection = vot.Rectangle(bbox.xy.x, bbox.xy.y, bbox.wh.x, bbox.wh.y)
-    #TODO: Retrieve confidence from model (add return value in adnet.tracking)
+    #TODO: mapping confidence to 0~1 (if not in 0~1 range)
     confidence = 1
 
     handle.report(selection, confidence)
