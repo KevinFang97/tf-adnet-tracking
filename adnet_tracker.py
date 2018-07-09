@@ -1,27 +1,38 @@
+import os
+import random
+import commons
+import numpy as np
+import tensorflow as tf
+import sys
+sys.path.insert(0,"/home/fang/vot/mavot/tracking/source/fakekit")
+
+from boundingbox import BoundingBox, Coordinate
+from tracker.example.python import vot
 import runner
-
-#path init
-ADNET_MODEL_PATH = "/home/yuwing/2018CK2/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
-VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
-
-#import toolkit
-sys.path.insert(0,VOT_PATH)
-from tracker.examples.python import vot
+from configs import ADNetConf
 
 #init runner
-init_err = False
-_environ = dict(os.environ)  # or os.environ.copy()
-try:
-    os.environ['ADNET_MODEL_PATH'] = ADNET_MODEL_PATH
-    adnet = runner.ADNetRunner()
-except:
-    print("init error")
-    init_err = True
-finally:
-    os.environ.clear()
-    os.environ.update(_environ)
-if init_err:
-    sys.exit(0)
+#init_err = False
+#_environ = os.environ.copy()  # or os.environ.copy()
+#print(os.environ)
+#try:
+    #os.environ["ADNET_MODEL_PATH"] = "/home/fang/vot/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
+    #adnet = runner.ADNetRunner()
+#except Exception as e:
+    #print("init error")
+    #print(e)
+    #init_err = True
+#finally:
+    #os.environ.clear()
+    #os.environ.update(_environ)
+#if init_err:
+    #sys.exit(0)
+ADNetConf.get('./conf/repo.yaml')
+random.seed(1258)
+np.random.seed(1258)
+tf.set_random_seed(1258)
+
+adnet = runner.ADNetRunner()
 
 #start tracking
 handle = vot.VOT("rectangle")
@@ -29,7 +40,7 @@ imagefile = handle.frame()
 if not imagefile:
     sys.exit(0)
 selection = handle.region()
-bbox = boundingbox.BoundingBox(selection.x,selection.y,selection.width,selection.height)
+bbox = BoundingBox(selection.x,selection.y,selection.width,selection.height)
 
 while(True):
     imagefile = handle.frame()
