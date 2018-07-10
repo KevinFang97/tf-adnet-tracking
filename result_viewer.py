@@ -15,6 +15,8 @@ def generateJPGfromResult(result, jpg_source_path, jpg_save_path, bbox_color=(0,
 	img = cv2.rectangle(img, lower_left, upper_right, bbox_color, bbox_thickness)
 	cv2.imwrite(jpg_save_path, img)
 
+
+
 #return shape: (num_lines, 4)
 def getArrayFromTxt(result_txt_path):
 	file = open(result_txt_path, 'r')
