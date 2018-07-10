@@ -9,8 +9,8 @@ import cv2
 #given a result ([x,y,w,h]) and a jpg, draw bbox and save it
 def generateJPGfromResult(result, jpg_source_path, jpg_save_path, bbox_color=(0,255,0), bbox_thickness=1):
 	x, y, w, h = result
-	lower_left = (int(x-w/2),int(y-h/2))
-	upper_right = (int(x+w/2),int(y+h/2))
+	upper_left = (int(x),int(y))
+	lower_right = (int(x+w),int(y+h))
 	img = cv2.imread(jpg_source_path)
 	img = cv2.rectangle(img, lower_left, upper_right, bbox_color, bbox_thickness)
 	cv2.imwrite(jpg_save_path, img)
