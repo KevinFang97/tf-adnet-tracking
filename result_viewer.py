@@ -15,7 +15,16 @@ def generateJPGfromResult(result, jpg_source_path, jpg_save_path, bbox_color=(0,
 	img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
 	cv2.imwrite(jpg_save_path, img)
 
-
+def generateJPGfromResult_MultiBBOX(results_list, jpg_source_path, jpg_save_path, bbox_color_list=[(255,0,0),(0,255,0),(0,0,255)], bbox_thickness=1):
+	img = cv2.imread(jpg_source_path)
+	for i in range(len(results_list)):
+		result = results_list[i]
+		bbox_color = bbox_color_list[i]
+		x, y, w, h = result
+		upper_left = (int(x),int(y))
+		lower_right = (int(x+w),int(y+h))
+		img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
+	cv2.imwrite(jpg_save_path, img)
 
 #return shape: (num_lines, 4)
 def getArrayFromTxt(result_txt_path):
@@ -54,6 +63,24 @@ def generateForResultPatch(result_txt_path, jpg_source_folder, jpg_save_folder, 
 		jpg_source_path = jpg_source_folder + int2jpg(i+1)
 		jpg_save_path = jpg_save_folder + int2jpg(i+1)
 		generateJPGfromResult(list(results[i]), jpg_source_path, jpg_save_path, bbox_color, bbox_thickness)
+
+
+#source jpg name format: 8-digit_num_padding_by_0.jpg
+def generateForResultPatch_MultiBBOX(result_txt_path_list, jpg_source_folder, jpg_save_folder, bbox_color_list=[(255,0,0),(0,255,0),(0,0,255)], bbox_thickness=1):
+	results_list = []
+	for i in range(len(result_txt_path_list)):
+		result_txt_path = result_txt_path_list[i]
+		results = getArrayFromTxt(result_txt_path)
+		results_list.append(results)
+	num_lines = results_list[0].shape[0]
+	#print(results)
+	#print(range(num_lines))
+	results_list = np.array(results_list)
+	for i in range(num_lines):
+		#print("processing pic: " + str(num_lines+1))
+		jpg_source_path = jpg_source_folder + int2jpg(i+1)
+		jpg_save_path = jpg_save_folder + int2jpg(i+1)
+		generateJPGfromResult_MultiBBOX(list(results_list[:,i]), jpg_source_path, jpg_save_path, bbox_color_list, bbox_thickness)
 
 #test generateJPGfromResult
 def test1():
