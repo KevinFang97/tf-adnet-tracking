@@ -12,7 +12,7 @@ def generateJPGfromResult(result, jpg_source_path, jpg_save_path, bbox_color=(0,
 	upper_left = (int(x),int(y))
 	lower_right = (int(x+w),int(y+h))
 	img = cv2.imread(jpg_source_path)
-	img = cv2.rectangle(img, lower_left, upper_right, bbox_color, bbox_thickness)
+	img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
 	cv2.imwrite(jpg_save_path, img)
 
 #return shape: (num_lines, 4)

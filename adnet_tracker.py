@@ -14,7 +14,7 @@ VOT_PATH = "/home/yuwing/2018CK2/vot/vot-toolkit"
 #import toolkit
 sys.path.insert(0,VOT_PATH)
 from boundingbox import BoundingBox, Coordinate
-from tracker.example.python import vot
+from tracker.examples.python import vot
 import runner
 from configs import ADNetConf
 
