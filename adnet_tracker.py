@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 #!/usr/bin/python
 
 import runner
 import sys
 import os
 import commons
-import boundingbox
-from configs import ADNetConf
 import random
 import numpy as np
 import tensorflow as tf
@@ -14,15 +11,6 @@ import tensorflow as tf
 ADNET_MODEL_PATH = "/home/yuwing/2018CK2/adnet/tf-adnet-tracking/models/adnet-original/net_rl_weights.mat"
 VOT_PATH = "/home/yuwing/2018CK2/vot/vot-toolkit"
 #VOT_PATH = "/home/yuwing/2018CK2/tracking/source/fakekit"
-=======
-import os
-import random
-import commons
-import numpy as np
-import tensorflow as tf
-import sys
-sys.path.insert(0,"/home/fang/vot/vot-toolkit")
->>>>>>> 39406672bdc541261d0623b666b4a2a0eac57cb4
 
 from boundingbox import BoundingBox, Coordinate
 from tracker.example.python import vot
@@ -54,14 +42,19 @@ handle = vot.VOT("rectangle")
 imagefile = handle.frame()
 if not imagefile:
     sys.exit(0)
+img = commons.imread(imagefile)
+adnet.imgwh = Coordinate.get_imgwh(img)
 selection = handle.region()
 bbox = BoundingBox(selection.x,selection.y,selection.width,selection.height)
+
+adnet.initial_finetune(img, bbox)
 
 while(True):
     imagefile = handle.frame()
     if not imagefile:
         sys.exit(0)
     img = commons.imread(imagefile)
+    adnet.imgwh = Coordinate.get_imgwh(img)
 
     bbox, confidence = adnet.tracking(img,bbox)
     selection = vot.Rectangle(bbox.xy.x, bbox.xy.y, bbox.wh.x, bbox.wh.y)

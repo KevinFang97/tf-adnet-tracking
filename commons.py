@@ -32,9 +32,7 @@ def extract_region(img, bbox):
         return resize
     else:
         shape = list(np.shape(img))
-        x = int(shape[0]/2)
-        y = int(shape[1]/2)
-        resize = img[x-56:x+56,y-56:y+56]
+        resize = np.zeros((112,112,shape[2]))
         return resize
 
 
