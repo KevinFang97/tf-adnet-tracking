@@ -8,98 +8,115 @@ import cv2
 
 #given a result ([x,y,w,h]) and a jpg, draw bbox and save it
 def generateJPGfromResult(result, jpg_source_path, jpg_save_path, bbox_color=(0,255,0), bbox_thickness=1):
-	x, y, w, h = result
-	upper_left = (int(x),int(y))
-	lower_right = (int(x+w),int(y+h))
-	img = cv2.imread(jpg_source_path)
-	img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
-	cv2.imwrite(jpg_save_path, img)
+    x, y, w, h = result
+    upper_left = (int(x),int(y))
+    lower_right = (int(x+w),int(y+h))
+    img = cv2.imread(jpg_source_path)
+    img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
+    cv2.imwrite(jpg_save_path, img)
+
+def minmaxxyint(vec8):
+    min_x = int(min(vec8[0],vec8[2],vec8[4],vec8[6]))
+    max_x = int(max(vec8[0],vec8[2],vec8[4],vec8[6]))
+    min_y = int(min(vec8[1],vec8[3],vec8[5],vec8[7]))
+    max_y = int(max(vec8[1],vec8[3],vec8[5],vec8[7]))
+    return min_x,max_x,min_y,max_y
 
 def generateJPGfromResult_MultiBBOX(results_list, jpg_source_path, jpg_save_path, bbox_color_list=[(255,0,0),(0,255,0),(0,0,255)], bbox_thickness=1):
-	img = cv2.imread(jpg_source_path)
-	for i in range(len(results_list)):
-		result = results_list[i]
-		bbox_color = bbox_color_list[i]
-		x, y, w, h = result
-		upper_left = (int(x),int(y))
-		lower_right = (int(x+w),int(y+h))
-		img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
-	cv2.imwrite(jpg_save_path, img)
+    img = cv2.imread(jpg_source_path)
+    for i in range(len(results_list)):
+        result = results_list[i]
+        bbox_color = bbox_color_list[i]
+        if len(result) == 4:
+            x, y, w, h = result
+            upper_left = (int(x),int(y))
+            lower_right = (int(x+w),int(y+h))
+            img = cv2.rectangle(img, upper_left, lower_right, bbox_color, bbox_thickness)
+        else:
+            min_x, max_x, min_y, max_y = minmaxxyint(result)
+            img = cv2.line(img,(min_x,min_y),(min_x,max_y),bbox_color,bbox_thickness)
+            img = cv2.line(img,(min_x,max_y),(max_x,max_y),bbox_color,bbox_thickness)
+            img = cv2.line(img,(max_x,max_y),(max_x,min_y),bbox_color,bbox_thickness)
+            img = cv2.line(img,(max_x,min_y),(min_x,min_y),bbox_color,bbox_thickness)
+    cv2.imwrite(jpg_save_path, img)
 
 #return shape: (num_lines, 4)
 def getArrayFromTxt(result_txt_path):
-	file = open(result_txt_path, 'r')
-	lines = file.read().splitlines()
-	#print(lines)
-	results_list = []
-	for line in lines:
-		result = line.split(',')
-		result = [float(i) for i in result]
-		if(len(result) < 4):
-			result = [-result[0],-result[0],-result[0],-result[0]]
-		results_list.append(result)
-	return np.array(results_list)
+    file = open(result_txt_path, 'r')
+    lines = file.read().splitlines()
+    #print(lines)
+    results_list = []
+    for line in lines:
+        result = line.split(',')
+        result = [float(i) for i in result]
+        if(len(result) < 4):
+            result = [-result[0],-result[0],-result[0],-result[0]]
+        results_list.append(result)
+    return np.array(results_list)
 
 # 1 -> 00000001.jpg
 def int2jpg(i):
-	s = str(i)
-	l = len(s)
-	temp = ""
-	for j in range(8-l):
-		temp += "0"
-	temp += s
-	temp += ".jpg"
-	return temp
+    s = str(i)
+    l = len(s)
+    temp = ""
+    for j in range(8-l):
+        temp += "0"
+    temp += s
+    temp += ".jpg"
+    return temp
 
 
 #source jpg name format: 8-digit_num_padding_by_0.jpg
 def generateForResultPatch(result_txt_path, jpg_source_folder, jpg_save_folder, bbox_color=(0,255,0), bbox_thickness=1):
-	results = getArrayFromTxt(result_txt_path)
-	num_lines = results.shape[0]
-	#print(results)
-	#print(range(num_lines))
-	for i in range(num_lines):
-		#print("processing pic: " + str(num_lines+1))
-		jpg_source_path = jpg_source_folder + int2jpg(i+1)
-		jpg_save_path = jpg_save_folder + int2jpg(i+1)
-		generateJPGfromResult(list(results[i]), jpg_source_path, jpg_save_path, bbox_color, bbox_thickness)
+    results = getArrayFromTxt(result_txt_path)
+    num_lines = results.shape[0]
+    #print(results)
+    #print(range(num_lines))
+    for i in range(num_lines):
+        #print("processing pic: " + str(num_lines+1))
+        jpg_source_path = jpg_source_folder + int2jpg(i+1)
+        jpg_save_path = jpg_save_folder + int2jpg(i+1)
+        generateJPGfromResult(list(results[i]), jpg_source_path, jpg_save_path, bbox_color, bbox_thickness)
 
 
 #source jpg name format: 8-digit_num_padding_by_0.jpg
 def generateForResultPatch_MultiBBOX(result_txt_path_list, jpg_source_folder, jpg_save_folder, bbox_color_list=[(255,0,0),(0,255,0),(0,0,255)], bbox_thickness=1):
-	results_list = []
-	for i in range(len(result_txt_path_list)):
-		result_txt_path = result_txt_path_list[i]
-		results = getArrayFromTxt(result_txt_path)
-		results_list.append(results)
-	num_lines = results_list[0].shape[0]
-	#print(results)
-	#print(range(num_lines))
-	results_list = np.array(results_list)
-	for i in range(num_lines):
-		#print("processing pic: " + str(num_lines+1))
-		jpg_source_path = jpg_source_folder + int2jpg(i+1)
-		jpg_save_path = jpg_save_folder + int2jpg(i+1)
-		generateJPGfromResult_MultiBBOX(list(results_list[:,i]), jpg_source_path, jpg_save_path, bbox_color_list, bbox_thickness)
+    results_list = []
+    for i in range(len(result_txt_path_list)):
+        result_txt_path = result_txt_path_list[i]
+        results = getArrayFromTxt(result_txt_path)
+        results_list.append(results)
+    num_lines = results_list[0].shape[0]
+    #print("res_list len: " + str(len(results_list)))
+    #print("results shape: ")
+    #print(results_list[0].shape)
+    #print(results)
+    #print(range(num_lines))
+    #results_arr = np.stack(results_list,axis=0)
+    for i in range(num_lines):
+        #print("processing pic: " + str(num_lines+1))
+        jpg_source_path = jpg_source_folder + int2jpg(i+1)
+        jpg_save_path = jpg_save_folder + int2jpg(i+1)
+        generateJPGfromResult_MultiBBOX([list(results[i]) for results in results_list], jpg_source_path, jpg_save_path, bbox_color_list, bbox_thickness)
 
 #test generateJPGfromResult
 def test1():
-	result = [50,50,20,20]
-	jpg_source_path = '/home/fang/Pictures/test_minion.jpg'
-	jpg_save_path = '/home/fang/Pictures/test_minion_result.jpg'
-	generateJPGfromResult(result, jpg_source_path, jpg_save_path)
+    result = [50,50,20,20]
+    jpg_source_path = '/home/fang/Pictures/test_minion.jpg'
+    jpg_save_path = '/home/fang/Pictures/test_minion_result.jpg'
+    generateJPGfromResult(result, jpg_source_path, jpg_save_path)
 
 #test int2jpg
 def test2():
-	print(int2jpg(0))
-	print(int2jpg(1))
-	print(int2jpg(22))
-	print(int2jpg(333))
-	print(int2jpg(4444))
+    print(int2jpg(0))
+    print(int2jpg(1))
+    print(int2jpg(22))
+    print(int2jpg(333))
+    print(int2jpg(4444))
 
 #test generateForResultPatch
 def test3():
-	result_txt_path = "/home/fang/Pictures/test3/source/result.txt"
-	jpg_source_folder = "/home/fang/Pictures/test3/source/"
-	jpg_save_folder = "/home/fang/Pictures/test3/save/"
-	generateForResultPatch(result_txt_path, jpg_source_folder, jpg_save_folder)
+    result_txt_path = "/home/fang/Pictures/test3/source/result.txt"
+    jpg_source_folder = "/home/fang/Pictures/test3/source/"
+    jpg_save_folder = "/home/fang/Pictures/test3/save/"
+    generateForResultPatch(result_txt_path, jpg_source_folder, jpg_save_folder)

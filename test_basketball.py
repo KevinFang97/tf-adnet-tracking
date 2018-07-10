@@ -1,8 +1,22 @@
 import result_viewer as V
-result_txt_path = "/home/yuwing/2018CK2/vot/vot-workspace/adnet_2017/results/ADNet/baseline/basketball/basketball_001.txt"
-jpg_source_folder = "/home/yuwing/2018CK2/vot/vot-workspace/adnet_2017/sequences/basketball/color/"
-jpg_save_folder = "/home/yuwing/2018CK2/test/basketball/"
-V.generateForResultPatch(result_txt_path, jpg_source_folder, jpg_save_folder)
+from shutil import copyfile
+B = "ADNet"
+G = "ECO"
+R = "GT"
+pre = "/home/yuwing/2018CK2/vot/vot-workspace/adnet_2017/results/"
+video = "basketball"
+
+result_txt_path_list = [pre+B+"/baseline/"+video+"/"+video+"_001.txt", pre+B+"/baseline/"+video+"/"+video+"_001.txt", "/home/yuwing/2018CK2/vot/vot-workspace/adnet_2017/sequences/"+video+"/groundtruth.txt"]
+jpg_source_folder = "/home/yuwing/2018CK2/vot/vot-workspace/adnet_2017/sequences/"+video+"/color/"
+jpg_save_folder = "/home/yuwing/2018CK2/test/"+video+"/"
+
+V.generateForResultPatch_MultiBBOX(result_txt_path_list, jpg_source_folder, jpg_save_folder)
+copyfile('./show.html', jpg_save_folder+'show.html')
+with open(jpg_save_folder+'color.txt','w+') as f:
+    f.write("Blue:  "+B+'\n')
+    f.write("Green: "+G+'\n')
+    f.write("Red:   "+R+'\n')
+    f.close()
 
 print("DONE")
 

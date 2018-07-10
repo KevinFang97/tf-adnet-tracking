@@ -1,0 +1,26 @@
+<html>
+<head>
+<script>
+var num = 1;
+window.onkeydown = function (e) {
+    var code = e.keyCode ? e.keyCode : e.which;
+    if (code === 37) { //key left
+        if (num > 1){
+            num--;
+        }
+        var n=num.toString();
+        n='0'.repeat(8-n.length)+n;
+        document.getElementById("photo").src=n+".jpg";
+    } else if (code === 39) { //key right
+        num++;
+        var n=num.toString();
+        n='0'.repeat(8-n.length)+n;
+        document.getElementById("photo").src=n+".jpg";
+    }
+};
+</script>
+</head>
+<body>
+<img id="photo" src='00000001.jpg'>
+</body>
+</html>
